@@ -1,0 +1,24 @@
+{% extends 'payments/base.html' %}
+{% set active_page = 'creator.getsid' %}
+{% from '_form.html' import render_field %}
+
+{% block title %}Get seller id and token | {{ super() }}{% endblock %}
+
+{% block content %}
+
+	<div class="row mt-4 mb-4">
+		<div class="col-12">
+			<h1>Get Seller ID</h1>
+
+			<dl>
+				<dt>Name</dt>
+				<dd>{{ name }}</dd>
+				<dt>SID</dt>
+				<dd><input readonly value="{{ sid }}"></dd>
+				<dt>Token</dt>
+				<dd><input readonly value="{{ token }}"></dd>
+			</dl>
+		</div>
+	</div>
+
+{% endblock %}

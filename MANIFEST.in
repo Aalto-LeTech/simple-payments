@@ -1,0 +1,3 @@
+graft payments/static
+graft payments/templates
+global-exclude *.pyc

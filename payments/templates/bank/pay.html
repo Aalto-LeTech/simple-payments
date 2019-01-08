@@ -1,0 +1,114 @@
+{% extends 'payments/base.html' %}
+{% from '_form.html' import render_field %}
+
+{% block title %}Payment Request | {{ super() }}{% endblock %}
+
+{% block head %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='pay.css') }}">
+	<script src="{{ url_for('static', filename='pay.js') }}"></script>
+{% endblock %}
+
+{% macro post_action(action, message, color='primary') %}
+	<form method="POST" action="{{ url_for('bank.process') }}">
+		<input type="hidden" name="action" value="{{ action }}">
+		<input type="hidden" name="cookies_ok" value="{{ 'yes' if cookies_ok else 'no' }}">
+		<input type="hidden" name="payment" value="{{ payment_data }}">
+		<button type="submit" class="btn btn-{{ color }} btn-lg btn-block">{{ message }}</button>
+	</form>
+{% endmacro %}
+
+{% block content %}
+	<h1 class="mt-4">Payment request</h1>
+
+	<div class="row">
+		<div class="col-12">
+			<table class="table">
+				<tr>
+					<th>Seller</th>
+					<td>{{ payment.seller }}</td>
+				</tr>
+				<tr>
+					<th>Payment ID</th>
+					<td>{{ payment.pid }}</td>
+				<tr>
+					<th>Amount</th>
+					<td>{{ payment.amount }}</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-12 decorated-checkbox">
+			<input id="use-cookies" type="checkbox" value="yes" {% if cookies_ok %}checked disabled{% endif %}>
+			<label for="use-cookies">
+				Use cookies to keep a record of a payment history and to fail used payment ids.<br>
+				All data and this option can be removed on the history page or via browser settings.
+			</label>
+		</div>
+	</div>
+
+	{% if payment.message %}
+		<div class="row">
+			<div class="col-12">
+				<div class="alert alert-warning" role="alert">
+					<h4 class="alert-heading">The payment request validation errors</h4>
+					<pre>{{ payment.message }}</pre>
+				</div>
+			</div>
+		</div>
+	{% endif %}
+
+	<div class="row" id="buttons-row">
+		{% if payment.message %}
+			<div class="col-6 press-automatically" data-expire-in="240">
+				{{ post_action('error', 'Return with error', 'danger') }}
+			</div>
+		{% else %}
+			<div class="col-6">
+				{{ post_action('success', 'Accept payment', 'success') }}
+			</div>
+			<div class="col-6 press-automatically" data-expire-in="240">
+				{{ post_action('cancel', 'Cancel payment', 'warning') }}
+			</div>
+		{% endif %}
+	</div>
+
+	{% if payment_history or cookies_ok %}
+		<div class="row mt-4">
+			<div class="col-12 card border-info">
+				<div class="card-body">
+					<h3 class="card-title">Latest payment history for this seller</h3>
+					{% if payment_history %}
+						<table class="table table-sm card-text">
+							<thead class="thead-light">
+								<tr>
+									<th>Date</th>
+									<th>Amount</th>
+									<th>Result</th>
+									<th>Payment ID</th>
+									<th>Reference ID</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for p in payment_history %}
+									<tr {% if p.ref == payment.old.ref %}class="table-info"{% endif %}>
+										<td>{{ p.datestr }}</td>
+										<td>{{ p.amount }}</td>
+										<td><small class="badge badge-{{ p.result|result_badge_color }}">{{ p.result }}</small></td>
+										<td>{{ p.pid }}</td>
+										<td>{{ p.ref }}</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					{% else%}
+						<p>No previous payments yet.</p>
+					{% endif %}
+					<a href="{{ url_for('history.history') }}" target="_blank" class="btn btn-info">See your full payment history</a>
+				</div>
+			</div>
+		</div>
+	{% endif %}
+
+{% endblock %}

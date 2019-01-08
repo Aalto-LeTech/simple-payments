@@ -1,0 +1,20 @@
+{% extends 'payments/base.html' %}
+{% set active_page = 'creator.getsid' %}
+{% from '_bootstrap_form.html' import render_field_inline %}
+
+{% block title %}Get seller id and token | {{ super() }}{% endblock %}
+
+{% block content %}
+
+	<div class="row mt-4 mb-4">
+		<div class="col-12">
+			<h1>Get Seller ID</h1>
+
+			<form class="form-inline" method="POST">
+				{{ render_field_inline(form.seller) }}
+				<button type="submit" class="btn btn-primary mb-2">Get seller id and token</button>
+			</form>
+		</div>
+	</div>
+
+{% endblock %}

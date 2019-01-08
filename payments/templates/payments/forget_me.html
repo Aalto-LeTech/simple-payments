@@ -1,0 +1,37 @@
+{% extends 'payments/base.html' %}
+{% set active_page = 'payments.forget_me' %}
+
+{% from 'history/_history.html' import reset_button %}
+
+{% block title %}{% if session %}Forget me!{% else %}Privacy{% endif %} | {{ super() }}{% endblock %}
+
+{% block head %}
+	<script src="{{ url_for('static', filename='are_you_sure.js') }}"></script>
+{% endblock%}
+
+{% block content %}
+	<div class="row mt-4 mb-4">
+		<div class="col-12">
+			<h2>{% if session %}Forget me!{% else %}Privacy{% endif %}</h2>
+
+			<p class="alert alert-info">
+				This site does not store any information about you in the server, but some parts of the site can use cookies to provide extra features to you.<br>
+				Features are enabled by selecting respective checkboxes.
+			</p>
+
+			{% if session %}
+				<p class="alert alert-warning">
+					There is data in your session cookie <i class="fas fa-cookie"></i>.
+					In total of {{ session|length }} entries <i class="fas fa-smile-beam"></i>.
+				</p>
+				<p>{{ reset_button('clear_session', "Remove session cookie and all information in it!", 'danger', 'btn-lg') }}</p>
+			{% else %}
+				<p class="alert alert-success">
+					Currently, there is no information stored in the session and thus there is no cookie in your device.
+					<i class="fas fa-cookie-bite"></i>
+					<i class="fas fa-sad-tear"></i>
+				</p>
+			{% endif %}
+		</div>
+	</div>
+{% endblock %}

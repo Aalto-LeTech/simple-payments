@@ -1,0 +1,42 @@
+{% extends 'payments/base.html' %}
+{% from '_form.html' import render_form_fields %}
+
+{% block title %}Send a test payment | {{ super() }}{% endblock %}
+
+{% block head %}
+	{% if skip_confirm %}
+		<script src="{{ url_for('static', filename='auto_post_forms.js') }}"></script>
+	{% endif %}
+{% endblock%}
+
+{% block content %}
+	<div class="row mt-3 mb-4">
+		<div class="col-12">
+			<div class="card border-primary">
+				<div class="card-header">A payment request</div>
+				<div class="card-body">
+					<div class="input-group mb-3">
+						<div class="input-group-prepend">
+							<span class="input-group-text" id="basic-addon3">POST</span>
+						</div>
+						<input class="form-control mr-sm-2 " type="url" aria-label="url" value="{{ service }}" readonly="readonly">
+					</div>
+					<table class="table">
+						{% for name, value in data.items() %}
+							<tr>
+								<th>{{ name }}</th>
+								<td>{{ value }}</td>
+							</tr>
+						{% endfor %}
+					</table>
+					<form method="POST" action="{{ service }}">
+						{% for name, value in data.items() %}
+							<input type="hidden" name="{{ name }}" value="{{ value }}">
+						{% endfor %}
+						<button type="submit" class="btn btn-primary btn-lg btn-block">Send</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

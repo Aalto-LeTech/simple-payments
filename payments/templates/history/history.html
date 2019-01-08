@@ -1,0 +1,37 @@
+{% extends 'payments/base.html' %}
+{% set active_page = 'history.history' %}
+{% from 'history/_history.html' import payment_item, reset_button %}
+
+{% block title %}Payment History | {{ super() }}{% endblock %}
+
+{% block head %}
+	<script src="{{ url_for('static', filename='are_you_sure.js') }}"></script>
+{% endblock%}
+
+{% block content %}
+	<div class="row mt-4 mb-4">
+		<div class="col-12">
+			<div class="d-flex justify-content-between">
+				<h2>Your payment history</h2>
+				{% if history %}
+					{{ reset_button() }}
+				{% endif %}
+			</div>
+
+			{% if cookies_ok %}
+				<div class="alert alert-info d-flex justify-content-between">
+					<span>You have enabled cookies for storing payment records</span>
+					{{ reset_button('clear_cookie', "Clear this cookie and reset all history", 'info', 'btn-sm') }}
+				</div>
+			{% endif %}
+
+			<div class="list-group">
+				{% for payment in history %}
+					{{ payment_item(payment) }}
+				{% else %}
+					<p class="alert alert-info">No recorded payments yet</p>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+{% endblock %}

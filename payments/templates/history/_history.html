@@ -1,0 +1,19 @@
+{% macro payment_item(payment) %}
+	<div class="list-group-item list-group-item-action lex-column align-items-start {% if payment.result != 'success' %}list-group-item-light{% endif %}">
+	    <div class="d-flex w-100 justify-content-between">
+			<h5 class="mb-1">{{ payment.datestr }} , <b>{{ payment.amount }}</b> ¤</h5>
+			<h5 class="badge badge-{{ payment.result | result_badge_color }}">{{ payment.result|default('pending', True) }}</h5>
+	    </div>
+		<p class="mb-1">To: {{ payment.seller }} <small>({{ payment.sid }})</small></p>
+		<small>Payment ID: {{ payment.pid }}</small><br>
+		<small>Reference ID: {{ payment.ref }}</small>
+	</div>
+{% endmacro %}
+
+{% macro reset_button(name='do_reset', text='Reset History', color='danger', extra='') %}
+	<form method="POST">
+		<input type="hidden" name="{{ name }}" value="yes">
+		<button type="submit" class="btn btn-{{ color }} are-you-sure {{ extra }}" data-extra="{{ extra }}">{{ text }}</button>
+	</form>
+{% endmacro %}
+

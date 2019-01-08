@@ -1,0 +1,48 @@
+{% macro render_field(field) %}
+	{% if field.type == "BooleanField" %}
+		<div class="form-group form-check">
+			{{ field(class='form-check-input', **kwargs)|safe }}
+			<label for="{{ field.name }}" class="form-check-label">{{ field.label.text }}</label>
+		</div>
+	{% else %}
+		<div class="form-group">
+			<label for="{{ field.name }}">
+				{{ field.label.text }}
+				{% if field.flags.required %}<small><i class="field-required fas fa-star-of-life"></i></small>{% endif %}
+			</label>
+			{{ field(class="form-control", **kwargs)|safe }}
+			{% if field.description %}
+				<small class="form-text text-muted">{{ field.description }}</small>
+			{% endif %}
+			{% if field.errors %}
+				<ul class="errors">
+				{% for error in field.errors %}
+					<li>{{ error }}</li>
+				{% endfor %}
+				</ul>
+			{% endif %}
+		</div>
+	{% endif %}
+{% endmacro %}
+
+{% macro render_field_inline(field) %}
+	{% if field.type == "BooleanField" %}
+		<div class="form-group form-check">
+			{{ field(class='form-check-input', **kwargs)|safe }}
+			<label for="{{ field.name }}" class="form-check-label">{{ field.label.text }}</label>
+		</div>
+	{% else %}
+		<div class="form-group mb-2">
+			<label for="{{ field.name }}" class="sr-only">
+				{{ field.label.text }}
+			</label>
+			{{ field(class="form-control", placeholder=field.label.text, **kwargs)|safe }}
+		</div>
+	{% endif %}
+{% endmacro %}
+
+{% macro render_form_fields(form) %}
+	{% for field in form %}
+		{{ render_field(field, **kwargs) }}
+	{% endfor %}
+{% endmacro %}

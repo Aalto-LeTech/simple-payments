@@ -1,0 +1,100 @@
+{% extends 'payments/base.html' %}
+{% from '_form.html' import render_form_fields %}
+
+{% block title %}A test payment result | {{ super() }}{% endblock %}
+
+{% block content %}
+	<div class="row mt-3 mb-4">
+		<div class="col-12">
+			<h1>
+				A test payment result
+				<span class="badge badge-{{ result | result_badge_color }}">{{ result }}</span>
+			</h1>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-12">
+			<table class="table">
+				{% if record %}
+					<tr>
+						<th>Receiver</th>
+						<td>{{ record.seller }}</td>
+					</tr>
+					<tr>
+						<th>Amount</th>
+						<td>{{ record.amount }} ¤</td>
+					</tr>
+				{% endif %}
+				{% for field in (form.pid, form.ref) %}
+					<tr>
+						<th>{{ field.label.text }}</th>
+						<td>{{ field.data }}</td>
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+
+	{% if not form.validate() %}
+		<div class="row">
+			<div class="col-12 alert alert-warning" role="alert">
+				<h4 class="alert-heading">There are validation errors in payment response</h4>
+				<dl>
+					{% for field, errors in form.errors.items() %}
+						<dt>{{ field }}</dt>
+						<dd><ul>
+							{% for error in errors %}
+								<li>{{ error }}</li>
+							{% endfor %}
+						</ul></dd>
+					{% endfor %}
+				</dl>
+			</div>
+		</div>
+	{% endif %}
+
+	{% if form.message.data %}
+		<div class="row">
+			<div class="col-12 alert alert-warning" role="alert">
+				<h4 class="alert-heading">Error message from the payment service</h4>
+				<pre>{{ form.message.data }}</pre>
+			</div>
+		</div>
+	{% endif %}
+
+	{% if payment_history or cookies_ok %}
+		<div class="row mt-4">
+			<div class="col-12 card border-info">
+				<div class="card-body">
+					<h3 class="card-title">Latest payment request history for this seller</h3>
+					{% if payment_history %}
+						<table class="table table-sm card-text">
+							<thead class="thead-light">
+								<tr>
+									<th>Date</th>
+									<th>Amount</th>
+									<th>Result</th>
+									<th>Payment ID</th>
+									<th>Reference ID</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for p in payment_history %}
+									<tr>
+										<td>{{ p.datestr }}</td>
+										<td>{{ p.amount }}</td>
+										<td><small class="badge badge-{{ p.result|result_badge_color }}">{{ p.result }}</small></td>
+										<td>{{ p.pid }}</td>
+										<td>{{ p.ref }}</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					{% endif %}
+					<a href="{{ url_for('tester.history') }}" target="_blank" class="btn btn-info">See your full payment request history</a>
+				</div>
+			</div>
+		</div>
+	{% endif %}
+{% endblock %}
