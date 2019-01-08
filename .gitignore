@@ -1,0 +1,17 @@
+*~
+*.swp
+*.swo
+.DS_Store
+*.pot
+*.mo
+
+*.pyc
+__pycache__
+venv/
+
+.idea
+.settings
+.project
+.pydevproject
+*.sublime-project
+*.sublime-workspace
