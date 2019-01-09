@@ -17,7 +17,6 @@ def create_app(test_config=None):
         ],
     )
     app.register_blueprint('payments.views')
-    for bp_mod in app.config['APPS']:
-        app.register_blueprint(bp_mod)
+    app.load_apps()
     app.finalize_create()
     return app

@@ -109,6 +109,9 @@ class Flask(flask.Flask):
         if self.env == PRODUCTION:
             blueprint.static_folder = static
 
+    def load_apps(self):
+        for bp_mod in self.config.get('APPS', []):
+            self.register_blueprint(bp_mod)
 
     def finalize_create(self):
         # connect nav list to contextprosessor
