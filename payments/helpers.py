@@ -1,8 +1,8 @@
 from collections import defaultdict
 from decimal import Decimal
-from importlib import import_module
 from os import makedirs, urandom
 from os.path import exists, join
+from werkzeug.utils import import_string
 import flask
 
 
@@ -84,7 +84,7 @@ class Flask(flask.Flask):
         if not isinstance(blueprint, flask.Blueprint):
             # Find module
             if isinstance(blueprint, str):
-                module = import_module(blueprint)
+                module = import_string(blueprint)
             elif hasattr(blueprint, '__file__'):
                 module = blueprint
             else:
@@ -132,6 +132,14 @@ class Flask(flask.Flask):
                 collect.init_app(self)
             except ImportError:
                 pass
+
+    def wrap_middleware(self):
+        wsgi = self.wsgi_app
+        for mw in self.config.get('MIDDLEWARE', []):
+            if isinstance(mw, str):
+                mw = import_string(mw)
+            wsgi = mw(wsgi)
+        self.wsgi_app = wsgi
 
 
 def set_if_exists(bp, var, value):
