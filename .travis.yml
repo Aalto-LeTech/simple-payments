@@ -1,0 +1,25 @@
+language: python
+python:
+- '3.6'
+cache:
+  directories:
+  - "$HOME/.cache/pip"
+install:
+- pip install -e .
+- pip install wheel
+script:
+- "./setup.py test"
+- if [ "$TRAVIS_TAG" ]; then ./setup.py sdist; fi
+- if [ "$TRAVIS_TAG" ]; then ./setup.py bdist_wheel; fi
+deploy:
+  provider: releases
+  api_key:
+    secure: D/o/H8fMONy7jPxuDqNEXKSfYRztQX5u9zhNFHLHrq7+pmXRLEYN8gxkvJ9BNrhkkPnFd1ZuFzOLNHspMSsuPO25+VC2ASZA0HyZ3zmwJI36Mvmb6NGNlgsyTLPm4clhMhqBZyRo4OBPAYwqXb1faZYP/Y4HK2N4SuU3rk0xtlq/8HStRIQDV+jq2N77AKmY3uo6YpEv3E+fGp0/r1XBhrQprMvXLGGSt1cpcMdg6GQESbCSwloWW/+sGApz7tw/ngpybgje1rBPLg6P9XsSPQ+DLbCejqjdE9Bwyrw6OBcK1nAdoiXf9CRp2Fvh6I9xP78FrGPaOxClIjooVN7qonpcGssLpntCqNWaqb/5Ot/yF5rJ4KlC1iX+04CVu/X+T27TPkdOj8TIZufB/IwvfYtyf0QK6YqR2da9wEHhrWRHBgJ0x/MwEXDK5JKEaKzbPWTYCtxj+iMC23dTFDOnTk1rRMQPkCiuQmLlUHGFbNi0/Kn1+la+zyTNrsgnxaNl17pRwdNAdPPJbnZJN5ywyeBZ6L2XvLlEUMAmCTqwvX0sXEi8Bujahz8UyCSQKdE2jNimKKeBLdt2YprlCH8r40ukeS+jSYL4AUwcO6pJxyN4OIVMrVFNkYC6eWOy6Q+HV6qKZt6Mvhhg7zJNjhMBiS30oRFv2nzlBp5y4P4eh5c=
+  on:
+    repo: Aalto-LeTech/simple-payments
+    tags: true
+  file_glob: true
+  file:
+  - "dist/*.whl"
+  - "dist/*.tar.gz"
+  skip_cleanup: true
