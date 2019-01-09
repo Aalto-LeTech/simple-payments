@@ -1,0 +1,21 @@
+# /etc/systemd/system/simple-payments.service
+
+[Unit]
+Description=WWW App - Simple Payments
+PartOf=nginx.service
+
+[Service]
+User=payments
+Group=nogroup
+SyslogIdentifier=payments
+StandardOutput=syslog
+StandardError=syslog
+WorkingDirectory=/srv/payments/venv
+Environment="PATH=/usr/bin:/bin:/srv/payments/venv/bin"
+ExecStart=/srv/payments/venv/bin/waitress-serve --unix-socket-perms=0666 --unix-socket=/run/payments/waitress.sock --url-prefix=/payments --call 'payments:create_app'
+ExecStop=/bin/kill -s TERM $MAINPID
+RestartSec=15
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

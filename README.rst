@@ -30,7 +30,7 @@ For production:
 * Install simple payments with production requirements: :code:`./venv/bin/pip install $(echo simple_payments-*.whl)[prod]`
 * Run the app :code:`./venv/bin/waitress-serve --call 'payments:create_app'`
 * Local configuration is in :code:`venv/var/payments-instance/config.py` (created on first start)
-* Create systemd service from an example
+* Configure system with example files: `systemd service <docs/simple-payments.service>`_ and `tempfiles conf <docs/simple-payments.tmp.conf>`_
 
 TODO
 ----
