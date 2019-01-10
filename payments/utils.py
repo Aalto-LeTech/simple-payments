@@ -1,12 +1,12 @@
 import hmac
 import jwt
 import operator
-from time import time
+from base64 import urlsafe_b64encode, urlsafe_b64decode
+from decimal import Decimal
 from flask import current_app as app
 from hashlib import sha1, md5
 from random import getrandbits
-from base64 import urlsafe_b64encode, urlsafe_b64decode
-from urllib.parse import urlencode
+from time import time
 
 from .helpers import JSONEncoder
 
@@ -38,14 +38,19 @@ def get_token(seller_id):
     return urlsafe_b64encode(hash_).decode('ascii')
 
 
+FORMATTERS = {
+    Decimal: "{}={:.2f}",
+    float: "{}={:.2f}",
+}
+
 def get_checksum(obj, fields, token=None, with_params=False, getter=operator.getitem):
     params = [(k, getter(obj, k)) for k in fields]
-    checksum_data = list(params)
+    checksum_data = [FORMATTERS.get(type(v), "{}={}").format(k, v) for k, v in params]
     if token is None:
         token = get_token(getter(obj, 'sid'))
     if token is not False:
-        checksum_data.append(('token', token))
-    checksum = md5(urlencode(checksum_data).encode('ascii')).hexdigest()
+        checksum_data.append('token=%s' % (token,))
+    checksum = md5('&'.join(checksum_data).encode('utf-8')).hexdigest()
     if with_params:
         return params + [('checksum', checksum)]
     return checksum

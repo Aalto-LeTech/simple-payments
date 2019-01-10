@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from decimal import Decimal
 from wtforms import (
     BooleanField,
     DecimalField,
@@ -25,6 +26,9 @@ class TestPaymentRequestForm(Form):
     disable_iframe = BooleanField("Disable iframe and always open in a new window")
     use_cookies = BooleanField("Save the request info in a cookie for callback validation and history")
     skip_confirm = BooleanField('Skip a confirm page and directly forward to the payment sercice')
+
+    def validate_amount(self, field):
+        field.data = field.data.quantize(Decimal('0.01'))
 
     def get_post_data(self, **extra):
         data = OrderedDict()
