@@ -1,12 +1,385 @@
 {% extends 'payments/base.html' %}
 {% set active_page = 'docs.index' %}
 
-{% block content %}
+{% block head %}
+	<!-- https://highlightjs.org/ -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='hljs/ir-black.min.css') }}">
+	<script src="{{ url_for('static', filename='hljs/highlight.pack.js') }}"></script>
+	<script src="{{ url_for('static', filename='hljs/load.js') }}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='docs/style.css') }}">
+{% endblock %}
 
+{% block content %}
 	<div class="row mt-4 mb-4">
-		<div class="col-12">
-			<h1>Payments</h1>
-			<p>Payments is a simple bank service to test online payments in a course work.</p>
+		<div class="col-12 col-lg-8">
+
+<h1>Simple Payments</h1>
+<p>
+	Simple Payments is a simple bank service to test online payments in a course work.
+	The bank interface does not match a real system perfectly, but it has the typical properties of any service to service interface, including message signing.
+	Implementing this interface gives you an idea on how these type of interfaces work in real life. Note that even single sign-on (e.g. Shibboleth, Aalto login, LTI) work in similar way, so it is not just bank interfaces.
+<p>
+
+<div class="jumbotron project-info">
+<p>
+	Simple Payments is a web service build using Flask microframework.
+	The source code is not intended for the students to understand, but it can give some insight on using <a href="#extra-libs">Flask</a> or <a href="#extra-libs">Jinja2</a>.
+	You are always free to create issues if you encounter bugs.
+	Better yet, you can fix them and create pull request!
+</p>
+<p class="lead">
+	<a class="btn btn-dark" href="https://github.com/Aalto-LeTech/simple-payments/" role="button" target="_blank">
+		View on GitHub
+		<i class="icon icon-github"></i>
+	</a>
+</p>
+</div>
+
+
+<h2 id="prerequisites" class="section">Prerequisites</h2>
+
+<h3 class="step">A seller ID and a secret key</h3>
+<p>
+	In digital communication, it's important to verify that a message comes from a correct and trusted sender.
+	There are several algorithms to solve that problem including <a href="https://en.wikipedia.org/wiki/Digital_signature">a digital signature</a> and <a href="https://en.wikipedia.org/wiki/Message_authentication_code">a message authentication code</a> (MAC).
+	In our interface, we use MAC to authenticate our messages, which requires a shared secret between your system and Simple Payments.
+</p>
+<p>
+	Thus, you need a secret key to use this bank service.
+	{% if 'creator' in apps %}
+		You can get one <a href="{{ url_for('creator.getsid') }}">here</a>.
+	{% else%}
+		You are not able to get one here, but you should have a form in the course material.
+	{% endif %}
+	Just input your seller name (no need to be real) and submit the form to get your seller id and secret key.
+	Later, this secret key is referred with the name <var>secret</var>.
+</p>
+<p class="alert alert-light">
+	Note that a secret key is Simple Payments installation specific.
+	Thus, a secret key created on your local computer, does not work with Simple Payments from a different provider.
+</p>
+{% if 'creator' in apps %}
+	<p>
+		<a class="btn btn-primary" href="{{ url_for('creator.getsid') }}" role="button">Open the seller id and secret key creation page</a></a>
+	</p>
+{% endif %}
+
+
+<h2 class="section">The Interface</h2>
+<p>
+	There are two main types how a service can use a second service for the benefit of the user.
+	First, service creates additional requests in behalf of the user.
+	Second, the user browser is directed to do the requests.
+</p>
+<p>
+	In the first, the service can create requests to the second service within the initial request context,
+	and thus implicitly knows all the respective information.
+	In addition, the service can use secrets for authenticate to the second service without exposing them to the browser.
+	Database access within a web application is and example of this.
+</p>
+<p>
+	In the second, the request context is loosely coupled to the request.
+	During the initial request the service can add some request, session or other information to the data going to the second service.
+	The service returns information to the browser, which will do a redirect or a form post to the second service with the data from the first.
+	Because the browser is doing the request, it will pass along all the cookies belonging to the second service.
+	This way, the second service can authenticate the user from the cookies or require them to login before handling the original task.
+	Finally, the second service will redirect back to the first service with some data from processing the task.
+	External authentication methods Shibboleth, Facebook or Google are examples of this type.
+</p>
+<p>
+	Based on above reasons, web payment platforms, e.g. PayPal and Paytrail, use the first type.
+	Though, there are some exceptions.
+	For example, Trustly uses the first type and thus requires user to break their bank account security.
+	Simple Payments conforms with the best practices by using the second type and ensures that the user's Simple Payment account stays secure.
+</p>
+<p>
+	To conclude, the payment process follows following diagram:
+</p>
+<img src="{{ url_for('static', filename='docs/process.svg') }}" alt="Payment process diagram" class="mx-auto d-block">
+<p class="alert alert-light">
+	In real world, the bank interface would do the authentication after the request to <code>/pay</code> and before presenting the verification form.
+</p>
+
+{% if 'tester' in apps %}
+	<p>
+		You can use <a href="{{ url_for('tester.index') }}">the test site</a> to explore how the interface behaves.
+	</p>
+{% endif %}
+
+
+<h3 class="step">Step 1: Make a payment request</h3>
+<p>
+	Your service needs to redirect the user to the payment service, when the user is ready to pay something.
+	This request can be HTTP POST or HTTP GET (redirect).
+	For both cases, the destination address is:
+	<pre><code class="plaintext">{{ url_for('bank.pay', _external=True) }}</code></pre>
+</p>
+<p>
+	Following parameters are required to exists in the request.
+</p>
+<p>
+	<table class="table table-bordered table-hover table-sm">
+		<thead class="thead-light">
+			<tr>
+				<th>Name</th>
+				<th>Type</th>
+				<th>Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td><var>pid</var></td>
+				<td>String: max len 64</td>
+				<td>Payment identifier used in <b>your</b> service to identify this payment</td>
+			</tr>
+			<tr>
+				<td><var>sid</var></td>
+				<td>String: <code>/^[a-zA-Z0-9_-]+={0,2}$/</code></td>
+				<td>Seller identifier that you created in <a href="#prerequisites">prerequisites</a>.</td>
+			</tr>
+			<tr>
+				<td><var>amount</var></td>
+				<td>Decimal: &gt;0, 2 decimal places</td>
+				<td>The amount of the payment</td>
+			</tr>
+			<tr>
+				<td><var>success_url</var></td>
+				<td>URL</td>
+				<td>The <i>absolute<i> url to call on your service after a successful payment</td>
+			</tr>
+			<tr>
+				<td><var>cancel_url</var></td>
+				<td>URL</td>
+				<td>The <i>absolute<i> url to call on your service after a user cancelled a payment</td>
+			</tr>
+			<tr>
+				<td><var>error_url</var></td>
+				<td>URL</td>
+				<td>The <i>absolute<i> url to call on your service after a payment failed</td>
+			</tr>
+			<tr>
+				<td><var>checksum</var></td>
+				<td>String</td>
+				<td>A security checksum calculated using a secret key (see below)</td>
+			</tr>
+		</tbody>
+	</table>
+</p>
+<h4>Calculating the checksum</h5>
+<p>
+	The checksum is calculated from <var>pid</var>, <var>sid</var>, <var>amount</var> and <var>secret</var>.
+	Variables are concatenated and encoded to binary using utf-8 encoding.
+	Finally, a md5 hash function is used to calculate the result.
+	A code snipped like this will yield a valid checksum:
+</p>
+<p>
+	<pre><code class="python">from hashlib import md5
+checksumstr = f"pid={pid:s}&amp;sid={sid:s}&amp;amount={amount:.2f}&amp;token={secret:s}"
+checksum = md5(checksumstr.encode('utf-8')).hexdigest()</code></pre>
+</p>
+<p>
+	The <var>secret</var> is the secret key for your seller id created in <a href="#prerequisites">prerequisites</a>.
+</p>
+<p class="alert alert-light">
+	Note that the above code does not work for query parameter handling for which <a href="https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode"><var>urllib.parse.urlencode</var></a> should be used instead.
+	<br>
+	<br>
+	In addition, md5 is not cryptographically secure for this purpose, but it's used here for legacy reasons.
+	For any new interface, always use better hash functions than md5.
+</p>
+
+<h4>An example form for a POST request</h4>
+<p>
+	You can use the payment interface simply via a html form.
+	For example, the form rendered on your site can look like the following (note that the following form does not contain correct values to actually work):
+</p>
+<samp>
+	<form action="{{ url_for('bank.pay', _external=True) }}" method="POST">
+		<input type="hidden" name="pid" value="payment1">
+		<input type="hidden" name="sid" value="l1YLtkV4YW1wbGU=">
+		<input type="hidden" name="amount" value="9.95">
+		<input type="hidden" name="success_url" value="http://localhost:8000/payment/success">
+		<input type="hidden" name="cancel_url" value="http://localhost:8000/payment/cancel">
+		<input type="hidden" name="error_url" value="http://localhost:8000/payment/error">
+		<input type="hidden" name="checksum"value="4dcd406dca0a2fe61f38db186299f30d">
+		Amount to be paid 9.95¤
+		<input type="submit" value="Pay" class="btn btn-primary btn-sm">
+	</form>
+</samp>
+<p>
+	The HTML code for the above form:
+	<pre><code class="html">&lt;form action="{{ url_for('bank.pay', _external=True) }}" method="POST"&gt;
+  &lt;input type="hidden" name="pid" value="payment1"&gt;
+  &lt;input type="hidden" name="sid" value="l1YLtkV4YW1wbGU="&gt;
+  &lt;input type="hidden" name="amount" value="9.95"&gt;
+  &lt;input type="hidden" name="success_url" value="http://localhost:8000/payment/success"&gt;
+  &lt;input type="hidden" name="cancel_url" value="http://localhost:8000/payment/cancel"&gt;
+  &lt;input type="hidden" name="error_url" value="http://localhost:8000/payment/error"&gt;
+  &lt;input type="hidden" name="checksum"value="4dcd406dca0a2fe61f38db186299f30d"&gt;
+  Amount to be paid 9.95¤
+  &lt;input type="submit" value="Pay"&gt;
+&lt;/form&gt;</code></pre>
+</p>
+
+<h4>An example redirect request</h4>
+<p>
+	You can encode the request data as an URL and return it as a HTTP redirect (302) response.
+	Remember to use correct encoding for query parameters.
+	Following example uses Python 3 standard library functions and <var>redirect</var> from a framework (e.g.
+	redirect <a href="https://docs.djangoproject.com/en/dev/topics/http/shortcuts/#redirect">in Django</a>
+	and <a href="http://flask.pocoo.org/docs/dev/api/#flask.redirect">in Flask</a>).
+
+	<pre><code class="python">from urllib.parse import urlencode
+bankapi = '{{ url_for('bank.pay', _external=True) }}'
+query = urlencode({
+ 'pid': 'payment1', 'sid': 'l1YLtkV4YW1wbGU=', 'amount': '9.95',
+ 'checksum': '4dcd406dca0a2fe61f38db186299f30d',
+ 'success_url': 'http://localhost:8000/payment/success',
+ 'cancel_url': 'http://localhost:8000/payment/cancel',
+ 'error_url': 'http://localhost:8000/payment/error'})
+return redirect(bankapi + '?' + query)</code></pre>
+</p>
+<p>
+	The HTTP response from a view using above code, would look like the following (some headers are omitted):
+	<pre><code class="http">HTTP/1.0 302 FOUND
+Content-Type: text/html; charset=utf-8
+Location: {{ url_for('bank.pay', _external=True) }}?pid=payment1&sid=l1YLtkV4YW1wbGU%3D&amount=9.95&checksum=4dcd406dca0a2fe61f38db186299f30d&success_url=http%3A%2F%2Flocalhost%3A8000%2Fpayment%2Fsuccess&cancel_url=http%3A%2F%2Flocalhost%3A8000%2Fpayment%2Fcancel&error_url=http%3A%2F%2Flocalhost%3A8000%2Fpayment%2Ferror</code></pre>
+
+
+<h3 class="step">Step 2: Handle the payment result</h3>
+<p>
+	When the form is posted or the user is redirected in the previous step,
+	the user will see details of the payment and can either accept or cancel the payment.
+	In a real world, this is where the user would authenticate to the payment service.
+	To keep things simple, we have no such authentication.
+	All the user information is optionally stored in a browser cookie.
+</p>
+<p>
+	Depending on the user's choice whether to accept or cancel the payment,
+	the user will be redirected to either the <var>success_url</var> or the <var>cancel_url</var> provided in the request to the payment service.
+	If there is an error with the request, like invalid checksum, then the user will be redirected to the <var>error_url</var>.
+	The request will be an HTTP GET request with the following parameters:
+
+	<table class="table table-bordered table-hover table-sm">
+		<thead class="thead-light">
+			<tr>
+				<th>Name</th>
+				<th>Type</th>
+				<th>Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td><var>pid</var></td>
+				<td>String, max len 64</td>
+				<td>The payment id you specified</td>
+			</tr>
+			<tr>
+				<td><var>ref</var></td>
+				<td>String, max len 64</td>
+				<td>Reference identifier for the payment generated by the payment service</td>
+			</tr>
+			<tr>
+				<td><var>result</var></td>
+				<td>String: <code>success</code>, <code>cancel</code> or <code>error</code></td>
+				<td>The confirmed payment result</td>
+			</tr>
+			<tr>
+				<td><var>checksum</var></td>
+				<td>String</td>
+				<td>A security checksum calculated using your secret key</td>
+			</tr>
+		</tbody>
+	</table>
+</p>
+<p>
+	Note that without the secured result parameter the request could be intercepted and new payment result forged by the user.
+	The checksum is calculated from <var>pid</var>, <var>ref</var>, <var>result</var> and <var>secret</var> like before.
+	A code snipped like this will yield a valid checksum:
+</p>
+<p>
+	<pre><code class="python">from hashlib import md5
+checksumstr = f"pid={pid:s}&amp;ref={ref:s}&amp;result={result:s}&amp;token={secret:s}"
+checksum = md5(checksumstr.encode('utf-8')).hexdigest()</code></pre>
+</p>
+<p>
+	The <var>secret</var> is again the secret key for your seller id created in <a href="#prerequisites">prerequisites</a>.
+</p>
+
+
+<h2 class="section">Extra material</h2>
+{% set col_dt = 'col-sm-3' %}
+{% set col_dd = 'col-sm-9' %}
+<p>
+	List of Python 3 standard library modules that might be useful for you.
+	These are also used in this project.
+</p>
+<dl class="row">
+	<dt class="{{ col_dt }}"><a href="https://docs.python.org/3/library/collections.html">collections</a></dt>
+	<dd class="{{ col_dd }}">
+		This module implements specialized container datatypes providing alternatives to Python’s general purpose built-in containers, <var>dict</var>, <var>list</var>, <var>set</var>, and <var>tuple</var>.
+		Some useful classes include <var>namedtuple</var>, <var>deque</var>, and <var>OrderedDict</var>.
+	</dd>
+	<dt class="{{ col_dt }}"><a href="https://docs.python.org/3/library/decimal.html">decimal</a></dt>
+	<dd class="{{ col_dd }}">
+		This module provides support for fast correctly-rounded decimal floating point arithmetic.
+		It offers several advantages over the <var>float</var> datatype.
+		The <var>decimal</var> is useful for monetary applications that often record numbers with a fixed number of places.
+	</dd>
+	<dt class="{{ col_dt }}"><a href="https://docs.python.org/3/library/hashlib.html">hashlib</a></dt>
+	<dd class="{{ col_dd }}">
+		This module implements a common interface to many different secure hash and message digest algorithms.
+		Included are the FIPS secure hash algorithms SHA1, SHA224, SHA256, SHA384, and SHA512 (defined in FIPS 180-2) as well as RSA’s MD5 algorithm (defined in Internet <a href="https://tools.ietf.org/html/rfc1321.html">RFC 1321</a>).
+	</dd>
+	<dt class="{{ col_dt }}"><a href="https://docs.python.org/3/library/urllib.parse.html">urllib.parse</a></dt>
+	<dd class="{{ col_dd }}">
+		This module defines a standard interface to break Uniform Resource Locator (URL) strings up in components (addressing scheme, network location, path etc.),
+		to combine the components back into a URL string, and to convert a “relative URL” to an absolute URL given a “base URL”.
+	</dd>
+</dl>
+
+<p>
+	Some other mentionable modules:
+</p>
+<dl class="row">
+	<dt class="{{ col_dt }}"><a href="https://docs.python.org/3/library/hmac.html">hmac</a></dt>
+	<dd class="{{ col_dd }}">
+		This module implements the Keyed-Hashing for Message Authentication (<a href="https://en.wikipedia.org/wiki/HMAC">HMAC</a>) algorithm as described by <a href="https://tools.ietf.org/html/rfc2104.html">RFC 2104</a>.
+		The HMAC would be cryptographically better for message authentication, than our custom algorithm,
+		but we use the custom algorithm to show you the principle of the message authentication.
+	</dd>
+</dl>
+
+<p id="extra-libs">
+	List of libraries and frameworks used in this project.
+</p>
+<dl class="row">
+	<dt class="{{ col_dt }}"><a href="http://flask.pocoo.org/">Flask</a></dt>
+	<dd class="{{ col_dd }}">
+		Flask is a microframework for Python based on <a href="http://werkzeug.pocoo.org/">Werkzeug</a>, Jinja2 and good intentions.
+		By default, Flask does not include a database abstraction layer, form validation or anything else where different libraries already exist that can handle that.
+		Instead, Flask supports extensions to add such functionality to your application as if it was implemented in Flask itself.
+	</dd>
+	<dt class="{{ col_dt }}"><a href="http://jinja.pocoo.org/docs/2.10/">Jinja2</a></dt>
+	<dd class="{{ col_dd }}">
+		Jinja2 is a modern and designer-friendly templating language for Python, modelled after Django’s templates.
+		It is fast, widely used and secure.
+		Jinja2 templates can also be used in Django projects.
+		For that, <a href="https://github.com/niwinz/django-jinja"><var>django_jinja</var></a>is a good interface library.
+	</dd>
+	<dt class="{{ col_dt }}"><a href="https://wtforms.readthedocs.io/">WTForms</a></dt>
+	<dd class="{{ col_dd }}">
+		WTForms is a flexible forms validation and rendering library for Python web development.
+		It is framework agnostic and can work with whatever web framework and template engine you choose.
+	</dd>
+	<dt class="{{ col_dt }}"><a href="https://pyjwt.readthedocs.io/">PyJWT</a></dt>
+	<dd class="{{ col_dd }}">
+		PyJWT is a Python library which allows you to encode and decode <a href="https://jwt.io/">JSON Web Tokens</a> (JWT).
+		JWT is an open, industry-standard (<a href="https://tools.ietf.org/html/rfc7519">RFC 7519</a>) for representing claims securely between two parties.
+	</dd>
+</dl>
+
+
 		</div>
 	</div>
 

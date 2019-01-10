@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="461px" height="441px" version="1.1" viewBox="-0.5 -0.5 461 441">
+  <style>
+    /* <![CDATA[ */
+    text {
+      font-family: sans-serif;
+      font-size: 12px;
+      text-align: center;
+      text-anchor: middle;
+      fill: #000;
+    }
+    path, rect {
+      stroke: #000;
+    }
+    path {
+      stroke-miterlimit: 10;
+    }
+    rect {
+      fill: #fff;
+    }
+    /* ]]> */
+  </style>
+  <rect x="0" y="0" width="100" height="40" rx="6" ry="6"/>
+  <path d="m50 40v400" stroke-dasharray="3 3"/>
+  <text x="49.5" y="26.5">The Browser</text>
+  <rect x="45" y="100" width="10" height="320"/>
+
+  <rect x="210" width="100" height="40" rx="6" ry="6"/>
+  <path d="m260 40v400" stroke-dasharray="3 3"/>
+  <text x="259.5" y="26.5">A Web Shop</text>
+  <rect x="255" y="100" width="10" height="50"/>
+  <rect x="255" y="370" width="10" height="50"/>
+
+  <rect x="340" width="120" height="40" rx="6" ry="6"/>
+  <path d="m400 40v400" stroke-dasharray="3 3"/>
+  <text x="399.5" y="26.5">Simple Payments</text>
+  <rect x="395" y="190" width="10" height="140"/>
+
+  <path d="m55 100h90q10 0 20 0h81.88"/>
+  <path d="m253.88 100l-7 3.5v-7z"/>
+  <text x="154.5" y="96.5">User: a request to pay</text>
+
+  <path d="m255 140h-15q-10 0-20 0h-156.88"/>
+  <path d="m56.12 140l7-3.5v7z"/>
+  <text x="155.5" y="136.5">a form or a redirect (step 1)</text>
+
+  <path d="m55 190h255q10 0 20 0h56.88"/>
+  <path d="m393.88 190l-7 3.5v-7z"/>
+  <text x="225.5" y="186.5">a POST or a GET to /pay</text>
+
+  <path d="m395 230h-45q-10 0-20 0h-266.88"/>
+  <path d="m56.12 230l7-3.5v7z"/>
+  <text x="225.5" y="226.5">a verification form</text>
+
+  <path d="m55 280h255q10 0 20 0h56.88"/>
+  <path d="m393.88 280l-7 3.5v-7z"/>
+  <text x="225.5" y="276.5">User: accept or cancel</text>
+
+  <path d="m395 320h-35q-10 0-20 0h-276.88"/>
+  <path d="m56.12 320l7-3.5v7z"/>
+  <text x="224.5" y="316.5">a redirect back to the shop</text>
+
+  <path d="m55 370h155q10 0 20 0h16.88"/>
+  <path d="m253.88 370l-7 3.5v-7z"/>
+  <text x="155.5" y="366.5">a GET to &lt;action&gt;_url (step 2)</text>
+
+  <path d="m255 410h-45q-10 0-20 0h-132.76" stroke-dasharray="3 3"/>
+  <path d="m65.12 405.5l-9 4.5 9 4.5"/>
+  <text x="154.5" y="406.5">a payment confirmation</text>
+</svg>

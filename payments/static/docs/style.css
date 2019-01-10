@@ -1,0 +1,45 @@
+.container .jumbotron p:last-child {
+  margin-bottom: 0;
+}
+.container .jumbotron.project-info {
+  padding: 2em 2em;
+}
+.container .section {
+  margin: 1em 0 0.4em;
+  border-top: 0.2em solid #353a40;
+  border-left: 1em solid #353a40;
+  border-bottom: 1em solid transparent;
+  padding: 0.6em 0.6em 0;
+}
+.container .step {
+  margin-top: 1em;
+  margin-bottom: 0.4em;
+  border-bottom: 1px solid #353a40;
+}
+.container var {
+  color: #7f35cc;
+}
+.container samp {
+  padding: .75rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: .25rem;
+  display: block;
+  background-color: #fefefe;
+}
+.container samp form {
+  display: inherit;
+}
+.container a[href^="https://"]:not(.btn):after,
+.container a[href^="http://"]:not(.btn):after {
+  /*content: "\00a0\ea7d";*/
+  content: "\202f\ea7d";
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
