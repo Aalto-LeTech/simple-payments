@@ -116,7 +116,7 @@ class Flask(flask.Flask):
     def finalize_create(self):
         # connect nav list to contextprosessor
         self.config['apps'] = frozenset([x.name for x in self.blueprints.values()])
-        self.context_processor(get_nav_processor(self))
+        self.context_processor(get_config_processor(self))
 
         # static stuff for production
         if self.env == PRODUCTION:
@@ -148,10 +148,11 @@ def set_if_exists(bp, var, value):
         if not exists(getattr(bp, var)):
             setattr(bp, var, None)
 
-def get_nav_processor(app):
+def get_config_processor(app):
     context = {
+        'use_cdn': app.config.get('USE_CDN', False),
         'apps': app.config['apps'],
-        'navs': Namespace(app.config[NAVS_KEY])
+        'navs': Namespace(app.config[NAVS_KEY]),
     }
     return lambda: context
 

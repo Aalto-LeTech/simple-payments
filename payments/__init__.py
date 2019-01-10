@@ -17,6 +17,7 @@ def create_app(test_config=None):
         ],
         MIDDLEWARE=[],
         BEHIND_PROXY=False,
+        USE_CDN=(app.env == 'production'),
     )
     if app.config.get('BEHIND_PROXY', False):
         from werkzeug.contrib.fixers import ProxyFix

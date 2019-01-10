@@ -7,7 +7,11 @@
 
 	<title>{% block title %}{% endblock %}Payments</title>
 
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	{% if use_cdn %}
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	{% else %}
+		<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+	{% endif %}
 	<link rel="stylesheet" href="{{ url_for('static', filename='icomoon/style.css') }}">
 	<script src="{{ url_for('static', filename='iframe.js') }}"></script>
 
@@ -16,7 +20,7 @@
 <body>
 
 {% set active_page = active_page|default('unknown') -%}
-{% set no_nav = no_nav|default(False) %}
+{% set no_nav = no_nav|default(False) -%}
 
 	{% if not no_nav %}
 		<nav id="page-nav" class="navbar navbar-expand-lg navbar-dark bg-dark">
