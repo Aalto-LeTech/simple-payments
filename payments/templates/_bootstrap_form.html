@@ -8,7 +8,10 @@
 		<div class="form-group">
 			<label for="{{ field.name }}">
 				{{ field.label.text }}
-				{% if field.flags.required %}<small><i class="field-required fas fa-star-of-life"></i></small>{% endif %}
+				{% if field.flags.required %}
+					<small><i class="field-required icon icon-asterisk"></i></small>
+					<span class="sr-only">required</span>
+				{% endif %}
 			</label>
 			{{ field(class="form-control", **kwargs)|safe }}
 			{% if field.description %}

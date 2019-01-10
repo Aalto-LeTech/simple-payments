@@ -1,0 +1,42 @@
+@font-face {
+  font-family: 'icomoon';
+  src:  url('fonts/icomoon.eot?h11rs5');
+  src:  url('fonts/icomoon.eot?h11rs5#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?h11rs5') format('truetype'),
+    url('fonts/icomoon.woff?h11rs5') format('woff'),
+    url('fonts/icomoon.svg?h11rs5#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+.icon:before {
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.icon-asterisk:before {
+  content: "\f069";
+}
+.icon-check-square:before {
+  content: "\f046";
+}
+.icon-square:before {
+  content: "\f096";
+}
+.icon-github:before {
+  content: "\f09b";
+}
+.icon-dice:before {
+  content: "\e915";
+}
+.icon-stopwatch:before {
+  content: "\e952";
+}
+.icon-external:before {
+  content: "\ea7d";
+}

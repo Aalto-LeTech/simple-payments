@@ -31,8 +31,7 @@
 
 	function update_timed_press(data, expires) {
 		empty(data.textbox);
-		const t = document.createTextNode(format(data.text, expires));
-		data.textbox.appendChild(t);
+		data.textbox.appendChild(document.createTextNode(expires));
 		if (expires > 0) {
 			setTimeout(update_timed_press, 1000, data, expires-1);
 		} else {
@@ -42,19 +41,17 @@
 
 	function add_timed_press(button, expires) {
 		const badge = document.createElement('span');
-		badge.setAttribute('class', 'badge badge-dark');
+		badge.setAttribute('class', 'badge badge-dark  icon icon-stopwatch');
 		button.appendChild(document.createTextNode(' '));
 		button.appendChild(badge);
-		const i = document.createElement('i');
-		i.setAttribute('class', 'fas fa-stopwatch');
-		badge.appendChild(i);
 		const text = document.createElement('span');
+		badge.appendChild(document.createTextNode(' '));
 		badge.appendChild(text);
+		badge.appendChild(document.createTextNode('s'));
 		const data = {
 			button: button,
 			badge: badge,
 			textbox: text,
-			text: " {0}s",
 		};
 		update_timed_press(data, expires)
 	}

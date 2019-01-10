@@ -19,18 +19,26 @@
 }
 
 .decorated-checkbox label::before {
-  font-weight: 400;
-  content: '\f111'; /* circle outline */
   display: block;
   position: absolute;
-  top: 15px;
+  top: 16px;
   left: 12px;
-  font: 2em 'Font Awesome 5 Free';
+  font-size: 2.2em;
+  content: '\f096';
+  /* icomoon */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .decorated-checkbox input:checked + label::before {
-  content: '\f058'; /* circle checkmark */
-  font-weight: 900;
+  content: '\f046';
 }
 
 .decorated-checkbox input:focus + label {

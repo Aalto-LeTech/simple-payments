@@ -87,17 +87,15 @@
 
 	window.addEventListener('load', function() {
 		add_input_button(document.getElementById('pid'), function(button, input) {
-			const i = document.createElement('i');
-			i.setAttribute('class', 'fas fa-dice');
-			button.appendChild(i);
+			button.classList.add('icon');
+			button.classList.add('icon-dice');
 			button.addEventListener('click', function() {
 				input.value = get_random_string(get_random_number(4, 20));
 			});
 		});
 		add_input_button(document.getElementById('amount'), function(button, input) {
-			const i = document.createElement('i');
-			i.setAttribute('class', 'fas fa-dice');
-			button.appendChild(i);
+			button.classList.add('icon');
+			button.classList.add('icon-dice');
 			button.addEventListener('click', function() {
 				input.value = get_random_number(1, 1000);
 			});

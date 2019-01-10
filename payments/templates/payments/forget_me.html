@@ -21,15 +21,12 @@
 
 			{% if session %}
 				<p class="alert alert-warning">
-					There is data in your session cookie <i class="fas fa-cookie"></i>.
-					In total of {{ session|length }} entries <i class="fas fa-smile-beam"></i>.
+					There is data in your session cookie. In total of {{ session|length }} entries.
 				</p>
 				<p>{{ reset_button('clear_session', "Remove session cookie and all information in it!", 'danger', 'btn-lg') }}</p>
 			{% else %}
 				<p class="alert alert-success">
 					Currently, there is no information stored in the session and thus there is no cookie in your device.
-					<i class="fas fa-cookie-bite"></i>
-					<i class="fas fa-sad-tear"></i>
 				</p>
 			{% endif %}
 		</div>
