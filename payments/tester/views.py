@@ -1,4 +1,3 @@
-from urllib.parse import parse_qsl, urlencode, urlsplit
 from flask import render_template, request, session, url_for
 
 from ..helpers import Blueprint
@@ -23,27 +22,16 @@ test_session_keys = {
 }
 
 
-@bp.route('/', methods=['GET', 'POST'])
+@bp.route('/', methods=['GET'])
 def index():
-    if request.method == 'POST':
-        form = TestPaymentRequestForm(request.form)
-
-        if form.validate():
-            url = url_for('tester.result', _external=True)
-            data = form.get_post_data(success_url=url, cancel_url=url, error_url=url)
-            return render_template('tester/forward.html',
-                data=data,
-                service=form.service.data,
-            )
-    else:
-        data = {
-            'sid': request.args.get('sid', ''),
-            'token': request.args.get('token', ''),
-            'service': url_for('bank.pay', _external=True),
-        }
-        for fn, sk in test_session_keys.items():
-            data[fn] = session.get(sk, False)
-        form = TestPaymentRequestForm(data=data)
+    data = {
+        'sid': request.args.get('sid', ''),
+        'token': request.args.get('token', ''),
+        'service': url_for('bank.pay', _external=True),
+    }
+    for fn, sk in test_session_keys.items():
+        data[fn] = session.get(sk, False)
+    form = TestPaymentRequestForm(data=data)
 
     return render_template('tester/index.html',
         form=form,
