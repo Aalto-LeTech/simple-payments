@@ -1,4 +1,4 @@
-from payments.models import (
+from ..models import (
     DateMixin,
     SellerMixin,
     SessionModel,
