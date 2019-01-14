@@ -18,10 +18,11 @@ ACTIONS = {'success', 'cancel', 'error'}
 bp = Blueprint('bank', __name__)
 
 
-@bp.route('/pay', methods=['POST'])
+@bp.route('/pay', methods=['GET', 'POST'])
 #@csrf_exempt
 def pay():
-    form = PaymentRequestForm(request.form)
+    data = request.args if request.method == 'GET' else request.form
+    form = PaymentRequestForm(data)
     form.validate()
     payment = form.get_payment()
     PaymentRecord.remove_old_and_limit()

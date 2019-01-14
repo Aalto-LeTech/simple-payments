@@ -1,4 +1,11 @@
-from flask import render_template, request, session, url_for
+from urllib.parse import urlencode, urljoin
+from flask import (
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 
 from ..helpers import Blueprint
 from ..utils import seller_name_from_id
@@ -60,10 +67,12 @@ def post():
             for sk in test_session_keys.values():
                 if sk in session:
                     del session[sk]
+        if form.skip_confirm.data:
+            url = urljoin(form.service.data, '?'+urlencode(data))
+            return redirect(url, code=302)
         return render_template('tester/post.html',
             data=data,
             service=form.service.data,
-            skip_confirm=form.skip_confirm.data,
         )
     return render_template('tester/error.html', form=form), 400
 

@@ -3,12 +3,6 @@
 
 {% block title %}Send a test payment | {{ super() }}{% endblock %}
 
-{% block head %}
-	{% if skip_confirm %}
-		<script src="{{ url_for('static', filename='auto_post_forms.js') }}"></script>
-	{% endif %}
-{% endblock%}
-
 {% block content %}
 	<div class="row mt-3 mb-4">
 		<div class="col-12">
