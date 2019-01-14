@@ -19,9 +19,9 @@
 							<label for="staticSeller">Seller</label>
 							<div class="input-group">
 								<input type="text" readonly class="form-control" id="staticSller" value="{{ seller }}">
-								{% if 'payments_sid' in apps %}
+								{% if 'creator' in apps %}
 									<div class="input-group-append">
-										<a class="btn btn-outline-secondary" href="{{ url_for('payments_sid.key') }}">New</a>
+										<a class="btn btn-outline-secondary" href="{{ url_for('creator.getsid') }}">New</a>
 									</div>
 								{% endif %}
 							</div>
