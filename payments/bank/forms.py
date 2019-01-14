@@ -1,3 +1,4 @@
+from hmac import compare_digest
 from wtforms import (
     DecimalField,
     StringField,
@@ -31,7 +32,8 @@ class PaymentRequestForm(Form):
             return False
         # Validate checksum
         test = get_checksum(self, ('pid', 'sid', 'amount'), getter=lambda o, k: getattr(o, k).raw_data[0])
-        if test != self.checksum.data:
+        if not compare_digest(test, self.checksum.data):
+            # Check https://docs.python.org/3/library/hmac.html#hmac.compare_digest for reason why this is used in place of a != b
             self.checksum.errors.append("The checksum does not match the data")
             return False
         # Validate unique pid
