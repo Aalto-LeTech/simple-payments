@@ -1,7 +1,7 @@
 {% extends 'payments/base.html' %}
 {% from '_form.html' import render_field %}
 
-{% block title %}Payment Request | {{ super() }}{% endblock %}
+{% block title %}A Payment Request | {{ super() }}{% endblock %}
 
 {% block head %}
 	<link rel="stylesheet" href="{{ url_for('static', filename='pay.css') }}">
@@ -18,7 +18,7 @@
 {% endmacro %}
 
 {% block content %}
-	<h1 class="mt-4">Payment request</h1>
+	<h1 class="mt-4">A Payment request</h1>
 
 	<div class="row">
 		<div class="col-12">

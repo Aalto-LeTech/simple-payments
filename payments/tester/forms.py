@@ -25,7 +25,7 @@ class TestPaymentRequestForm(Form):
     service = StringField('Service URL', [validators.required(), validators.URL(require_tld=False)])
     disable_iframe = BooleanField("Disable iframe and always open in a new window")
     use_cookies = BooleanField("Save the request info in a cookie for callback validation and history")
-    skip_confirm = BooleanField('Skip a confirm page and directly forward to the payment sercice')
+    skip_confirm = BooleanField('Skip a confirm page and directly forward to the payment service')
 
     def validate_amount(self, field):
         field.data = field.data.quantize(Decimal('0.01'))

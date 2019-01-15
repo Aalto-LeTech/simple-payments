@@ -2,17 +2,17 @@
 {% set active_page = 'creator.getsid' %}
 {% from '_bootstrap_form.html' import render_field_inline %}
 
-{% block title %}Get seller id and token | {{ super() }}{% endblock %}
+{% block title %}Get a seller id and a secret key | {{ super() }}{% endblock %}
 
 {% block content %}
 
 	<div class="row mt-4 mb-4">
 		<div class="col-12">
-			<h1>Get Seller ID</h1>
+			<h1>Get a seller id and a secret key</h1>
 
 			<form class="form-inline" method="POST">
 				{{ render_field_inline(form.seller) }}
-				<button type="submit" class="btn btn-primary mb-2">Get seller id and token</button>
+				<button type="submit" class="btn btn-primary mb-2">Get a seller id and a secret key</button>
 			</form>
 		</div>
 	</div>

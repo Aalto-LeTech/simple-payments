@@ -24,7 +24,7 @@ class PaymentRequestForm(Form):
     amount = DecimalField('Amount', [validators.required(), validators.NumberRange(min=0)], places=2)
     checksum = checksum_field
     success_url = StringField('Success URL', [validators.required(), validators.URL(require_tld=False)])
-    cancel_url = StringField('Cacnel URL', [validators.required(), validators.URL(require_tld=False)])
+    cancel_url = StringField('Cancel URL', [validators.required(), validators.URL(require_tld=False)])
     error_url = StringField('Error URL', [validators.required(), validators.URL(require_tld=False)])
 
     def validate(self):

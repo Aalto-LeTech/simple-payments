@@ -2,20 +2,20 @@
 {% set active_page = 'creator.getsid' %}
 {% from '_form.html' import render_field %}
 
-{% block title %}Get seller id and token | {{ super() }}{% endblock %}
+{% block title %}Get a seller id and a secret key | {{ super() }}{% endblock %}
 
 {% block content %}
 
 	<div class="row mt-4 mb-4">
 		<div class="col-12">
-			<h1>Get Seller ID</h1>
+			<h1>Get a seller id and a secret key</h1>
 
 			<dl>
 				<dt>Name</dt>
 				<dd>{{ name }}</dd>
-				<dt>SID</dt>
+				<dt>Seller ID</dt>
 				<dd><input readonly value="{{ sid }}"></dd>
-				<dt>Token</dt>
+				<dt>Secret Key</dt>
 				<dd><input readonly value="{{ token }}"></dd>
 			</dl>
 		</div>
