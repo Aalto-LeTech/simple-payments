@@ -7,6 +7,7 @@ from flask import current_app as app
 from hashlib import sha1, md5
 from random import getrandbits
 from time import time
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from .helpers import JSONEncoder
 
@@ -69,3 +70,17 @@ def jwt_encode(data, expire_in_sec=None):
         data['exp'] = int(time()) + expire_in_sec
     algorithms = app.config.get('JWT_ALGORITHMS', ['HS256'])
     return jwt.encode(data, app.secret_key, algorithm=algorithms[0], json_encoder=JSONEncoder).decode('ascii')
+
+
+def geturl_with_updated_data(url: str, data: dict):
+    scheme, netloc, path, query = urlsplit(url)[:4]
+    query = dict(parse_qsl(query))
+    query.update(data)
+    return urlunsplit((scheme, netloc, path, None, None)), query
+
+
+def geturl_with_updated_query(url: str, data: dict):
+    scheme, netloc, path, query = urlsplit(url)[:4]
+    query = dict(parse_qsl(query))
+    query.update(data)
+    return urlunsplit((scheme, netloc, path, urlencode(query), None))

@@ -1,4 +1,3 @@
-from urllib.parse import urlencode, urljoin
 from flask import (
     redirect,
     render_template,
@@ -8,7 +7,11 @@ from flask import (
 )
 
 from ..helpers import Blueprint
-from ..utils import seller_name_from_id
+from ..utils import (
+    geturl_with_updated_data,
+    geturl_with_updated_query,
+    seller_name_from_id,
+)
 from .models import TestRequest
 from .forms import (
     TestPaymentRequestForm,
@@ -68,11 +71,12 @@ def post():
                 if sk in session:
                     del session[sk]
         if form.skip_confirm.data:
-            url = urljoin(form.service.data, '?'+urlencode(data))
+            url = geturl_with_updated_query(form.service.data, data)
             return redirect(url, code=302)
+        url, data = geturl_with_updated_data(form.service.data, data)
         return render_template('tester/post.html',
             data=data,
-            service=form.service.data,
+            service=url,
         )
     return render_template('tester/error.html', form=form), 400
 
