@@ -13,6 +13,7 @@
 		<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
 	{% endif %}
 	<link rel="stylesheet" href="{{ url_for('static', filename='icomoon/style.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 	<script src="{{ url_for('static', filename='iframe.js') }}"></script>
 
 	{% block head %}{% endblock %}
@@ -53,5 +54,14 @@
 	<div class="container">
 		{% block content %}{% endblock %}
 	</div>
+
+	<footer id="page-footer" class="bg-light">
+		<div class="text-center">
+			© 2010
+			<a href="https://github.com/Aalto-LeTech/simple-payments/">Simple Payments</a>
+			v{{ version }}
+			- For purely educational purposes!
+		</div>
+	</footer>
 </body>
 </html>

@@ -1,0 +1,15 @@
+body {
+  padding-bottom: 4rem;
+}
+#page-footer {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1030;
+}
+#page-footer > div {
+  text-align: center;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}

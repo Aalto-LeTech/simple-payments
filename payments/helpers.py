@@ -149,7 +149,9 @@ def set_if_exists(bp, var, value):
             setattr(bp, var, None)
 
 def get_config_processor(app):
+    from . import __version__
     context = {
+        'version': __version__,
         'use_cdn': app.config.get('USE_CDN', False),
         'apps': app.config['apps'],
         'navs': Namespace(app.config[NAVS_KEY]),

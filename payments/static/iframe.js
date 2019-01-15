@@ -27,8 +27,12 @@
 	window.addEventListener('load', function() {
 		if (window.location !== window.parent.location) {
 			const nav = document.getElementById('page-nav');
-			empty(nav);
-			add_url_input_to(nav);
+			if (nav) {
+				empty(nav);
+				add_url_input_to(nav);
+			}
+			const footer = document.getElementById('page-footer');
+			if (footer) empty(footer);
 		}
 	});
 })();
