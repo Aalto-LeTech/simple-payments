@@ -1,6 +1,7 @@
 from urllib.parse import parse_qsl, urlencode, urlsplit
 from flask import (
     abort,
+    current_app as app,
     redirect,
     render_template,
     request,
@@ -25,13 +26,20 @@ def pay():
     form = PaymentRequestForm(data)
     form.validate()
     payment = form.get_payment()
-    PaymentRecord.remove_old_and_limit()
-    payment_history = PaymentRecord.all_from_session(payment.sid)[:10] if payment.sid else []
+    if 'history' in app.config['apps']:
+        PaymentRecord.remove_old_and_limit()
+        payment_history = PaymentRecord.all_from_session(payment.sid)[:10] if payment.sid else []
+        cookies_ok = session.get('cookies-ok', False)
+    else:
+        PaymentRecord.clear_all_from_session()
+        session.pop('cookies-ok', None)
+        payment_history = []
+        cookies_ok = None
     return render_template('bank/pay.html',
         payment=payment,
         payment_data=payment.to_jwt(expire_in_sec=300), # 5min
         payment_history=payment_history,
-        cookies_ok=session.get('cookies-ok', False),
+        cookies_ok=cookies_ok,
     )
 
 
@@ -59,7 +67,7 @@ def process():
         record.result = 'error'
 
     # Cookies
-    if not session.get('cookies-ok', False) and request.form.get('cookies_ok', 'no') == 'yes':
+    if not session.get('cookies-ok', False) and request.form.get('cookies_ok', 'no') == 'yes' and 'history' in app.config['apps']:
         session['cookies-ok'] = True
 
     # Save record

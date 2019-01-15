@@ -38,15 +38,17 @@
 		</div>
 	</div>
 
-	<div class="row">
-		<div class="col-12 decorated-checkbox">
-			<input id="use-cookies" type="checkbox" value="yes" {% if cookies_ok %}checked disabled{% endif %}>
-			<label for="use-cookies">
-				Use cookies to keep a record of a payment history and to fail used payment ids.<br>
-				All data and this option can be removed on the history page or via browser settings.
-			</label>
+	{% if cookies_ok is not none %}
+		<div class="row">
+			<div class="col-12 decorated-checkbox">
+				<input id="use-cookies" type="checkbox" value="yes" {% if cookies_ok %}checked disabled{% endif %}>
+				<label for="use-cookies">
+					Use cookies to keep a record of a payment history and to fail used payment ids.<br>
+					All data and this option can be removed on the history page or via browser settings.
+				</label>
+			</div>
 		</div>
-	</div>
+	{% endif %}
 
 	{% if payment.message %}
 		<div class="row">
