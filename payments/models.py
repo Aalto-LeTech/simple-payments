@@ -111,8 +111,9 @@ class SessionModel(SimpleModel):
         return keep
 
     def remove_from_session(self):
+        data = self.to_dict()
         args = [data.get(fn) for fn in self.KEY_FIELDS]
-        hey = self.get_key(*args)
+        key = self.get_key(*args)
         if key in session:
             del session[key]
 
